@@ -6,7 +6,9 @@ namespace DemoMVC.Models
     public class Student
     { [Key]
         public  string PersonID { get; set; }
+        [Required]
         public string FullName { get; set; }
+        [Required]
         public string Address { get; set; }
     }
 }
