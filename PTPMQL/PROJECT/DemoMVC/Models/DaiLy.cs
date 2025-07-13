@@ -1,32 +1,20 @@
-using DemoMVC.Models;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DaiLy.Models
+namespace DemoMVC.Models
 {
-    
     public class DaiLy
     {
-        
-    
+        [Key]
         public string MaDaiLy { get; set; }
-
-       
-           public string TenDaiLy { get; set; }
-
-     
+        public string TenDaiLy { get; set; }
         public string DiaChi { get; set; }
-
-       
         public string NguoiDaiDien { get; set; }
-
-        
         public string DienThoai { get; set; }
 
-        // Foreign key
-       
+        // Khóa ngoại liên kết với HeThongPhanPhoi
         public string MaHTPP { get; set; }
-
-        // Navigation property để truy xuất thông tin hệ thống phân phối
-        
-       
+        [ForeignKey("MaHTPP")]
+        public HeThongPhanPhoi HeThongPhanPhoi { get; set; }
     }
 }

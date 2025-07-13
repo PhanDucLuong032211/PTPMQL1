@@ -1,17 +1,15 @@
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
-using DemoMVC.Models;
-namespace HeThongPhanPhoi.Models
+namespace DemoMVC.Models
 {
-    
     public class HeThongPhanPhoi
     {
-       
+        [Key]
         public string MaHTPP { get; set; }
-
-      
         public string TenHTPP { get; set; }
 
-        // Navigation property để truy xuất các đại lý thuộc hệ thống
-    
+        // Navigation property (nếu muốn liên kết với DaiLy)
+        public ICollection<DaiLy> DaiLys { get; set; }
     }
 }

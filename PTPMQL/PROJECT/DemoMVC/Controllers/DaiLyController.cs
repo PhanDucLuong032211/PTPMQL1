@@ -10,22 +10,23 @@ using DemoMVC.Models;
 
 namespace DemoMVC.Controllers
 {
-    public class StudentController : Controller
+    public class DaiLyController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public StudentController(ApplicationDbContext context)
+        public DaiLyController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Student
+        // GET: DaiLy
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Student.ToListAsync());
+            var applicationDbContext = _context.DaiLy.Include(d => d.HeThongPhanPhoi);
+            return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Student/Details/5
+        // GET: DaiLy/Details/5
         public async Task<IActionResult> Details(string id)
         {
             if (id == null)
@@ -33,51 +34,42 @@ namespace DemoMVC.Controllers
                 return NotFound();
             }
 
-            var student = await _context.Student
-                .FirstOrDefaultAsync(m => m.PersonID == id);
-            if (student == null)
+            var daiLy = await _context.DaiLy
+                .Include(d => d.HeThongPhanPhoi)
+                .FirstOrDefaultAsync(m => m.MaDaiLy == id);
+            if (daiLy == null)
             {
                 return NotFound();
             }
 
-            return View(student);
+            return View(daiLy);
         }
 
-        // GET: Student/Create
+        // GET: DaiLy/Create
         public IActionResult Create()
         {
-
-            AutoID autoGenerateId = new AutoID();
-            //1. Lay ra ban ghi moi nhat cua Student
-            var student = _context.Student.OrderByDescending(s => s.PersonID).FirstOrDefault();
-            //2. Neu student == null thi gan StudentID = ST0
-            var studentID = student == null ? "ST000" : student.PersonID;
-            var newStudentID = autoGenerateId.GenerateId(studentID);
-            var newStudent = new Student
-            {
-                PersonID = newStudentID,
-                FullName = string.Empty
-            };
-            return View(newStudent);
+            ViewData["MaHTPP"] = new SelectList(_context.HeThongPhanPhoi, "MaHTPP", "MaHTPP");
+            return View();
         }
 
-        // POST: Student/Create
+        // POST: DaiLy/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PersonID,FullName,Address")] Student student)
+        public async Task<IActionResult> Create([Bind("MaDaiLy,TenDaiLy,DiaChi,NguoiDaiDien,DienThoai,MaHTPP")] DaiLy daiLy)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(student);
+                _context.Add(daiLy);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(student);
+            ViewData["MaHTPP"] = new SelectList(_context.HeThongPhanPhoi, "MaHTPP", "MaHTPP", daiLy.MaHTPP);
+            return View(daiLy);
         }
 
-        // GET: Student/Edit/5
+        // GET: DaiLy/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
@@ -85,22 +77,23 @@ namespace DemoMVC.Controllers
                 return NotFound();
             }
 
-            var student = await _context.Student.FindAsync(id);
-            if (student == null)
+            var daiLy = await _context.DaiLy.FindAsync(id);
+            if (daiLy == null)
             {
                 return NotFound();
             }
-            return View(student);
+            ViewData["MaHTPP"] = new SelectList(_context.HeThongPhanPhoi, "MaHTPP", "MaHTPP", daiLy.MaHTPP);
+            return View(daiLy);
         }
 
-        // POST: Student/Edit/5
+        // POST: DaiLy/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("PersonID,FullName,Address")] Student student)
+        public async Task<IActionResult> Edit(string id, [Bind("MaDaiLy,TenDaiLy,DiaChi,NguoiDaiDien,DienThoai,MaHTPP")] DaiLy daiLy)
         {
-            if (id != student.PersonID)
+            if (id != daiLy.MaDaiLy)
             {
                 return NotFound();
             }
@@ -109,12 +102,12 @@ namespace DemoMVC.Controllers
             {
                 try
                 {
-                    _context.Update(student);
+                    _context.Update(daiLy);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!StudentExists(student.PersonID))
+                    if (!DaiLyExists(daiLy.MaDaiLy))
                     {
                         return NotFound();
                     }
@@ -125,10 +118,11 @@ namespace DemoMVC.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(student);
+            ViewData["MaHTPP"] = new SelectList(_context.HeThongPhanPhoi, "MaHTPP", "MaHTPP", daiLy.MaHTPP);
+            return View(daiLy);
         }
 
-        // GET: Student/Delete/5
+        // GET: DaiLy/Delete/5
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
@@ -136,34 +130,35 @@ namespace DemoMVC.Controllers
                 return NotFound();
             }
 
-            var student = await _context.Student
-                .FirstOrDefaultAsync(m => m.PersonID == id);
-            if (student == null)
+            var daiLy = await _context.DaiLy
+                .Include(d => d.HeThongPhanPhoi)
+                .FirstOrDefaultAsync(m => m.MaDaiLy == id);
+            if (daiLy == null)
             {
                 return NotFound();
             }
 
-            return View(student);
+            return View(daiLy);
         }
 
-        // POST: Student/Delete/5
+        // POST: DaiLy/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var student = await _context.Student.FindAsync(id);
-            if (student != null)
+            var daiLy = await _context.DaiLy.FindAsync(id);
+            if (daiLy != null)
             {
-                _context.Student.Remove(student);
+                _context.DaiLy.Remove(daiLy);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool StudentExists(string id)
+        private bool DaiLyExists(string id)
         {
-            return _context.Student.Any(e => e.PersonID == id);
+            return _context.DaiLy.Any(e => e.MaDaiLy == id);
         }
     }
 }
