@@ -1,24 +1,73 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using DemoMVC.Data;
 using DemoMVC.Models;
-
+using System.Text.Encodings.Web;
+using Microsoft.EntityFrameworkCore; 
+using DemoMVC.Data;
+using DemoMVC.Models.Process;
+using System.Data;
+using System.Xml;
+using OfficeOpenXml;
 namespace DemoMVC.Controllers
 {
     public class StudentController : Controller
     {
         private readonly ApplicationDbContext _context;
-
+        private ExcelProcess _excelProcess = new ExcelProcess();
         public StudentController(ApplicationDbContext context)
         {
             _context = context;
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Upload(IFormFile file)
+        {
+            if (file != null)
+            {
+                string fileExtension = Path.GetExtension(file.FileName);
+                if (fileExtension != ".xls" && fileExtension != ".xlsx")
+                {
+                    ModelState.AddModelError("", "Please choose excel file to upload!");
+                }
+                else
+                {
+                    // Rename file when upload to server
+                    var fileName = DateTime.Now.ToShortTimeString().Replace(":", "") + fileExtension;
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory() + "/Uploads/Excels", fileName);
+                    var fileLocation = new FileInfo(filePath).ToString();
 
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        // Save file to server
+                        await file.CopyToAsync(stream);
+                        var dt = _excelProcess.ExcelToDataTable(fileLocation);
+
+                        // Duyệt từng dòng trong DataTable
+                        for (int i = 0; i < dt.Rows.Count; i++)
+                        {
+                            // Tạo đối tượng Person mới
+                            var ps = new Student();
+
+                            // Gán giá trị từ Excel vào các thuộc tính
+                            ps.PersonID = dt.Rows[i][0].ToString();
+                            ps.FullName = dt.Rows[i][1].ToString();
+                            ps.Address = dt.Rows[i][2].ToString();
+
+
+                            // Thêm đối tượng vào context
+                            _context.Add(ps);
+                        }
+
+                        // Lưu các thay đổi vào database
+                        await _context.SaveChangesAsync();
+
+                        // Chuyển hướng về Index
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+            }
+
+            return View();
+        }
         // GET: Student
         public async Task<IActionResult> Index()
         {
@@ -165,5 +214,32 @@ namespace DemoMVC.Controllers
         {
             return _context.Student.Any(e => e.PersonID == id);
         }
+             public IActionResult Download()
+    {
+        // Cấu hình license để tránh lỗi
+      
+
+        var fileName = "DanhSachNguoiDung_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx";
+
+        using (ExcelPackage excelPackage = new ExcelPackage())
+        {
+            ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("Sheet 1");
+
+            // Header
+            worksheet.Cells["A1"].Value = "PersonID";
+            worksheet.Cells["B1"].Value = "FullName";
+            worksheet.Cells["C1"].Value = "Address";
+            // Lấy dữ liệu từ database
+            var personList = _context.Student.ToList();
+
+            // Đổ dữ liệu vào từ hàng 2
+            worksheet.Cells["A2"].LoadFromCollection(personList, false);
+
+            // Xuất ra stream
+            var stream = new MemoryStream(excelPackage.GetAsByteArray());
+
+            // Trả về file excel
+            return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+        }}
     }
 }

@@ -361,3 +361,11 @@ E:\PTPMQL1\PTPMQL\project\demomvc\bin\Debug\net9.0\runtimes\win-x86\native\e_sql
 E:\PTPMQL1\PTPMQL\project\demomvc\bin\Debug\net9.0\runtimes\win\lib\net6.0\System.Runtime.Caching.dll
 E:\PTPMQL1\PTPMQL\project\demomvc\obj\Debug\net9.0\DemoMVC.csproj.AssemblyReference.cache
 E:\PTPMQL1\PTPMQL\project\demomvc\obj\Debug\net9.0\DemoMVC.csproj.Up2Date
+E:\PTPMQL1\PTPMQL\PROJECT\DemoMVC\bin\Debug\net9.0\EPPlus.dll
+E:\PTPMQL1\PTPMQL\PROJECT\DemoMVC\bin\Debug\net9.0\Microsoft.IO.RecyclableMemoryStream.dll
+E:\PTPMQL1\PTPMQL\PROJECT\DemoMVC\bin\Debug\net9.0\Microsoft.Win32.SystemEvents.dll
+E:\PTPMQL1\PTPMQL\PROJECT\DemoMVC\bin\Debug\net9.0\System.Drawing.Common.dll
+E:\PTPMQL1\PTPMQL\PROJECT\DemoMVC\bin\Debug\net9.0\System.Xml.XPath.XmlDocument.dll
+E:\PTPMQL1\PTPMQL\PROJECT\DemoMVC\bin\Debug\net9.0\runtimes\win\lib\netcoreapp3.0\Microsoft.Win32.SystemEvents.dll
+E:\PTPMQL1\PTPMQL\PROJECT\DemoMVC\bin\Debug\net9.0\runtimes\unix\lib\netcoreapp3.0\System.Drawing.Common.dll
+E:\PTPMQL1\PTPMQL\PROJECT\DemoMVC\bin\Debug\net9.0\runtimes\win\lib\netcoreapp3.0\System.Drawing.Common.dll
