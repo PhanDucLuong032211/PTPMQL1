@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DemoMVC.Data;
 using DemoMVC.Models;
+using DemoMVC.Models.ViewModels;
 
 namespace DemoMVC.Controllers
 {
@@ -22,8 +23,21 @@ namespace DemoMVC.Controllers
         // GET: DaiLy
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.DaiLy.Include(d => d.HeThongPhanPhoi);
+            var applicationDbContext = _context.DaiLies.Include(d => d.HTPP);
             return View(await applicationDbContext.ToListAsync());
+        }
+        public async Task<IActionResult> Index2()
+        {
+            var daiLyList = await _context.DaiLies
+                .Include(d => d.HTPP)
+                .Select(d => new DaiLyVM
+                {
+                    MaDaiLy = d.MaDaiLy,
+                    TenDaiLy = d.TenDaiLy,
+                    TenHTPP = d.HTPP != null ? d.HTPP.TenHTPP : "Không có hệ thống phân phối"
+                })
+                .ToListAsync();
+            return View(daiLyList);
         }
 
         // GET: DaiLy/Details/5
@@ -34,8 +48,8 @@ namespace DemoMVC.Controllers
                 return NotFound();
             }
 
-            var daiLy = await _context.DaiLy
-                .Include(d => d.HeThongPhanPhoi)
+            var daiLy = await _context.DaiLies
+                .Include(d => d.HTPP)
                 .FirstOrDefaultAsync(m => m.MaDaiLy == id);
             if (daiLy == null)
             {
@@ -48,7 +62,7 @@ namespace DemoMVC.Controllers
         // GET: DaiLy/Create
         public IActionResult Create()
         {
-            ViewData["MaHTPP"] = new SelectList(_context.HeThongPhanPhoi, "MaHTPP", "MaHTPP");
+            ViewData["MaHTPP"] = new SelectList(_context.HeThongPhanPhois, "MaHTPP", "TenHTPP");
             return View();
         }
 
@@ -65,7 +79,7 @@ namespace DemoMVC.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["MaHTPP"] = new SelectList(_context.HeThongPhanPhoi, "MaHTPP", "MaHTPP", daiLy.MaHTPP);
+            ViewData["MaHTPP"] = new SelectList(_context.HeThongPhanPhois, "MaHTPP", "MaHTPP", daiLy.MaHTPP);
             return View(daiLy);
         }
 
@@ -77,12 +91,12 @@ namespace DemoMVC.Controllers
                 return NotFound();
             }
 
-            var daiLy = await _context.DaiLy.FindAsync(id);
+            var daiLy = await _context.DaiLies.FindAsync(id);
             if (daiLy == null)
             {
                 return NotFound();
             }
-            ViewData["MaHTPP"] = new SelectList(_context.HeThongPhanPhoi, "MaHTPP", "MaHTPP", daiLy.MaHTPP);
+            ViewData["MaHTPP"] = new SelectList(_context.HeThongPhanPhois, "MaHTPP", "MaHTPP", daiLy.MaHTPP);
             return View(daiLy);
         }
 
@@ -118,7 +132,7 @@ namespace DemoMVC.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["MaHTPP"] = new SelectList(_context.HeThongPhanPhoi, "MaHTPP", "MaHTPP", daiLy.MaHTPP);
+            ViewData["MaHTPP"] = new SelectList(_context.HeThongPhanPhois, "MaHTPP", "MaHTPP", daiLy.MaHTPP);
             return View(daiLy);
         }
 
@@ -130,8 +144,8 @@ namespace DemoMVC.Controllers
                 return NotFound();
             }
 
-            var daiLy = await _context.DaiLy
-                .Include(d => d.HeThongPhanPhoi)
+            var daiLy = await _context.DaiLies
+                .Include(d => d.HTPP)
                 .FirstOrDefaultAsync(m => m.MaDaiLy == id);
             if (daiLy == null)
             {
@@ -146,10 +160,10 @@ namespace DemoMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var daiLy = await _context.DaiLy.FindAsync(id);
+            var daiLy = await _context.DaiLies.FindAsync(id);
             if (daiLy != null)
             {
-                _context.DaiLy.Remove(daiLy);
+                _context.DaiLies.Remove(daiLy);
             }
 
             await _context.SaveChangesAsync();
@@ -158,7 +172,7 @@ namespace DemoMVC.Controllers
 
         private bool DaiLyExists(string id)
         {
-            return _context.DaiLy.Any(e => e.MaDaiLy == id);
+            return _context.DaiLies.Any(e => e.MaDaiLy == id);
         }
     }
 }

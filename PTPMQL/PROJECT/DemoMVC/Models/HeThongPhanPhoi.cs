@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace DemoMVC.Models
@@ -6,10 +5,10 @@ namespace DemoMVC.Models
     public class HeThongPhanPhoi
     {
         [Key]
+        [Display(Name = "Mã Hệ Thống Phân Phối")]
         public string MaHTPP { get; set; }
+        [Display(Name = "Tên Hệ Thống Phân Phối")]
         public string TenHTPP { get; set; }
-
-        // Navigation property (nếu muốn liên kết với DaiLy)
-        public ICollection<DaiLy> DaiLys { get; set; }
+        public ICollection<DaiLy>? DaiLy { get; set; }
     }
 }

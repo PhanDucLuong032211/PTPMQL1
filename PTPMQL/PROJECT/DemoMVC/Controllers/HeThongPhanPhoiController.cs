@@ -22,7 +22,7 @@ namespace DemoMVC.Controllers
         // GET: HeThongPhanPhoi
         public async Task<IActionResult> Index()
         {
-            return View(await _context.HeThongPhanPhoi.ToListAsync());
+            return View(await _context.HeThongPhanPhois.ToListAsync());
         }
 
         // GET: HeThongPhanPhoi/Details/5
@@ -33,7 +33,7 @@ namespace DemoMVC.Controllers
                 return NotFound();
             }
 
-            var heThongPhanPhoi = await _context.HeThongPhanPhoi
+            var heThongPhanPhoi = await _context.HeThongPhanPhois
                 .FirstOrDefaultAsync(m => m.MaHTPP == id);
             if (heThongPhanPhoi == null)
             {
@@ -73,7 +73,7 @@ namespace DemoMVC.Controllers
                 return NotFound();
             }
 
-            var heThongPhanPhoi = await _context.HeThongPhanPhoi.FindAsync(id);
+            var heThongPhanPhoi = await _context.HeThongPhanPhois.FindAsync(id);
             if (heThongPhanPhoi == null)
             {
                 return NotFound();
@@ -124,7 +124,7 @@ namespace DemoMVC.Controllers
                 return NotFound();
             }
 
-            var heThongPhanPhoi = await _context.HeThongPhanPhoi
+            var heThongPhanPhoi = await _context.HeThongPhanPhois
                 .FirstOrDefaultAsync(m => m.MaHTPP == id);
             if (heThongPhanPhoi == null)
             {
@@ -139,10 +139,10 @@ namespace DemoMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var heThongPhanPhoi = await _context.HeThongPhanPhoi.FindAsync(id);
+            var heThongPhanPhoi = await _context.HeThongPhanPhois.FindAsync(id);
             if (heThongPhanPhoi != null)
             {
-                _context.HeThongPhanPhoi.Remove(heThongPhanPhoi);
+                _context.HeThongPhanPhois.Remove(heThongPhanPhoi);
             }
 
             await _context.SaveChangesAsync();
@@ -151,7 +151,7 @@ namespace DemoMVC.Controllers
 
         private bool HeThongPhanPhoiExists(string id)
         {
-            return _context.HeThongPhanPhoi.Any(e => e.MaHTPP == id);
+            return _context.HeThongPhanPhois.Any(e => e.MaHTPP == id);
         }
     }
 }
